@@ -11,6 +11,14 @@ public class User {
 
     private String name;
     private String email;
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    @Column(nullable = false)
+    private String roles;
 
     public User() {
     }
@@ -42,5 +50,17 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getRoles() {
+        return roles;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRoles(String roles) {
+        this.roles = roles;
     }
 }
