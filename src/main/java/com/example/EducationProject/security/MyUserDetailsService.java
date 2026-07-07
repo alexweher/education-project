@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.example.EducationProject.entity.Role;
 
 
 @Service
@@ -29,7 +30,13 @@ public class MyUserDetailsService implements UserDetailsService {
                 .builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRoles().replace("ROLE_", "")) // важно!
+                .roles(
+                        user.getRoles()
+                                .stream()
+                                .map(Role::getName)
+                                .map(role -> role.replace("ROLE_", ""))
+                                .toArray(String[]::new)
+                )
                 .build();
     }
 }

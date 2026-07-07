@@ -2,8 +2,10 @@ package com.example.EducationProject.service;
 
 import com.example.EducationProject.controller.UserController;
 import com.example.EducationProject.dto.UserDto;
+import com.example.EducationProject.entity.Role;
 import com.example.EducationProject.entity.User;
 import com.example.EducationProject.exception.UserNotFoundException;
+import com.example.EducationProject.repository.RoleRepository;
 import com.example.EducationProject.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +14,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -25,8 +30,9 @@ public class UserService {
     private static final Logger log =
             LoggerFactory.getLogger(UserController.class);
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -126,8 +132,12 @@ public class UserService {
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
-        dto.setRoles(user.getRoles());
-
+        dto.setRoles(
+                user.getRoles()
+                        .stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toSet())
+        );
         return dto;
     }
 
@@ -136,7 +146,18 @@ public class UserService {
         user.setId(dto.getId());
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setRoles(dto.getRoles());
+
+        Set<Role> roles = dto.getRoles()
+                .stream()
+                .map(roleName ->
+                        roleRepository.findByName(roleName)
+                                .orElseThrow(() ->
+                                        new RuntimeException("Role not found: " + roleName))
+                )
+                .collect(Collectors.toSet());
+
+        user.setRoles(roles);
+
         return user;
     }
 }

@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class UserDto {
 
     private Long id;
@@ -21,15 +24,9 @@ public class UserDto {
 
     private String password;
 
-    private String roles;
+    private Set<String> roles = new HashSet<>();
 
-    public String getRoles() {
-        return roles;
-    }
 
-    public void setRoles(String roles) {
-        this.roles = roles;
-    }
 
     public UserDto() {
     }
@@ -70,5 +67,13 @@ public class UserDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
+    public Set<String> getRoles() {
+        return roles;
     }
 }
