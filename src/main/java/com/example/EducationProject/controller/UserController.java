@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ public class UserController {
     }
 
     // ===== CREATE =====
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UserDto> createUser(
             @Valid @RequestBody UserDto userDto) {
@@ -43,6 +45,7 @@ public class UserController {
     }
 
     // ===== GET WITH FILTER =====
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserDto>> getUsers(
             @RequestParam(required = false) String name,
@@ -59,6 +62,7 @@ public class UserController {
     }
 
     // ===== GET BY ID =====
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
 
@@ -72,6 +76,7 @@ public class UserController {
     }
 
     // ===== UPDATE =====
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id,
                                               @RequestBody UserDto userDto) {
@@ -86,6 +91,7 @@ public class UserController {
     }
 
     // ===== DELETE =====
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 

@@ -1,6 +1,7 @@
 package com.example.EducationProject.service;
 
 import com.example.EducationProject.controller.UserController;
+import com.example.EducationProject.dto.RegisterRequest;
 import com.example.EducationProject.dto.UserDto;
 import com.example.EducationProject.entity.Role;
 import com.example.EducationProject.entity.User;
@@ -23,7 +24,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-
     private final PasswordEncoder passwordEncoder;
 
 
@@ -34,6 +34,29 @@ public class UserService {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+
+    public UserDto register(RegisterRequest request) {
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("User with this email already exists");
+        }
+
+        Role role = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Role ROLE_USER not found"));
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        user.addRole(role);
+
+        User savedUser = userRepository.save(user);
+
+        return mapToDto(savedUser);
     }
 
 
